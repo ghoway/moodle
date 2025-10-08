@@ -20,7 +20,7 @@ const password = process.env.MOODLE_PASSWORD;
 async function scrapeMoodle(browser, keyword) {
   const page = await browser.newPage();
   try {
-    // **PERBAIKAN 1: Menyamar sebagai browser biasa**
+    // Menyamar sebagai browser biasa
     await page.setUserAgent(
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
     );
@@ -33,7 +33,6 @@ async function scrapeMoodle(browser, keyword) {
       const cookiesString = await fs.readFile(SESSION_FILE_PATH);
       const cookies = JSON.parse(cookiesString);
       await page.setCookie(...cookies);
-      // **PERBAIKAN 2: Beri waktu lebih lama (60 detik)**
       await page.goto(coursesURL, { waitUntil: 'networkidle2', timeout: 60000 });
       await page.waitForSelector('.usermenu', { timeout: 5000 });
       loggedIn = true;
@@ -87,6 +86,7 @@ async function scrapeMoodle(browser, keyword) {
       const forumElement = section.querySelector('li.activity.forum a');
       const gmeetElement = section.querySelector('li.activity.googlemeet a');
       const moduleElement = section.querySelector('li.activity.url a');
+      const assignmentElement = section.querySelector('li.activity.assign a'); // <-- Tambahan
 
       return {
         id,
@@ -95,6 +95,7 @@ async function scrapeMoodle(browser, keyword) {
         forumLink: forumElement ? forumElement.href : null,
         gmeetLink: gmeetElement ? gmeetElement.href : null,
         moduleLink: moduleElement ? moduleElement.href : null,
+        assignmentLink: assignmentElement ? assignmentElement.href : null, // <-- Tambahan
       };
     });
 
@@ -112,6 +113,7 @@ async function scrapeMoodle(browser, keyword) {
       forumLink: sectionInfo.forumLink,
       gmeetLink: sectionInfo.gmeetLink,
       moduleLink: sectionInfo.moduleLink,
+      assignmentLink: sectionInfo.assignmentLink, // <-- Tambahan
     };
 
   } catch (error) {

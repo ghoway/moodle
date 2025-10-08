@@ -26,7 +26,7 @@ async function main() {
   }
 
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: false,
     defaultViewport: null,
     args: ['--start-maximized'],
   });
@@ -135,27 +135,29 @@ async function main() {
     console.log(`\n✨ Current Week: ${sectionInfo.dateText}`);
     console.log(`   Link Section: ${currentWeekLink}`);
 
-    // **PERUBAHAN DI SINI**: Cari link Gmeet dan Module juga
     const activities = await page.$eval(currentSectionSelector, (section) => {
       const quizElement = section.querySelector('li.activity.quiz a');
       const forumElement = section.querySelector('li.activity.forum a');
-      // Selector baru berdasarkan HTML yang Anda berikan
       const gmeetElement = section.querySelector('li.activity.googlemeet a');
-      const moduleElement = section.querySelector('li.activity.url a'); // Modul menggunakan class 'url'
+      const moduleElement = section.querySelector('li.activity.url a');
+      // **PENAMBAHAN BARU: Selector untuk Assignment (Tugas)**
+      const assignmentElement = section.querySelector('li.activity.assign a');
 
       return {
         quizLink: quizElement ? quizElement.href : null,
         forumLink: forumElement ? forumElement.href : null,
         gmeetLink: gmeetElement ? gmeetElement.href : null,
         moduleLink: moduleElement ? moduleElement.href : null,
+        assignmentLink: assignmentElement ? assignmentElement.href : null,
       };
     });
 
-    // **PERUBAHAN DI SINI**: Tampilkan hasil Gmeet dan Module
     console.log(`   Link Quiz : ${activities.quizLink || 'Tidak Ada Quiz'}`);
     console.log(`   Link Forum : ${activities.forumLink || 'Tidak Ada Forum'}`);
     console.log(`   Link Gmeet : ${activities.gmeetLink || 'Tidak Ada Gmeet'}`);
     console.log(`   Link Module: ${activities.moduleLink || 'Tidak Ada Module'}`);
+    // **PENAMBAHAN BARU: Tampilkan hasil pencarian Assignment**
+    console.log(`   Link Tugas : ${activities.assignmentLink || 'Tidak Ada Tugas'}`);
     
   } catch (error) {
     if (error.name === 'TimeoutError') {
